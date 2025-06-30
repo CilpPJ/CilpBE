@@ -1,4 +1,5 @@
-FROM ubuntu:latest
-LABEL authors="SAMSUNG"
+FROM openjdk:17-jdk
 
-ENTRYPOINT ["top", "-b"]
+COPY build/libs/*SNAPSHOP.jar project.jar
+
+ENTRYPOINT ["java", "-jar", "/project.jar"]
