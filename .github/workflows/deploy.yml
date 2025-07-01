@@ -19,8 +19,22 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: application.yml 파일 만들기
-        run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
+      - name: application.yml 생성
+        run: |
+          echo "
+          spring:
+            datasource:
+              url: ${{ secrets.DB_URL }}
+              username: ${{ secrets.DB_USERNAME }}
+              password: ${{ secrets.DB_PASSWORD }}
+              driver-class-name: com.mysql.cj.jdbc.Driver
+
+            jpa:
+              hibernate:
+                ddl-auto: update
+              show-sql: true
+              database-platform: org.hibernate.dialect.MySQL8Dialect
+          " > ./src/main/resources/application.yml
 
       - name: 빌드 권한 부여
         run: chmod +x ./gradlew
