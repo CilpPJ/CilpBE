@@ -22,6 +22,8 @@ jobs:
       - name: application.yml 생성
         run: |
           echo "
+          spring.config.import: classpath:application-swagger.yml
+          
           spring:
             datasource:
               url: ${{ secrets.DB_URL }}
