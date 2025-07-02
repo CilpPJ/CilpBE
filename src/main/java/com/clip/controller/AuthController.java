@@ -3,6 +3,9 @@ package com.clip.controller;
 import com.clip.config.security.CustomUserDetailsService;
 import com.clip.config.security.JwtService;
 import com.clip.dto.LoginRequestDTO;
+import com.clip.dto.LoginResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
@@ -23,6 +26,10 @@ public class AuthController {
     private final CustomUserDetailsService userDetailsService;
     private final JwtService jwtService;
 
+    @Operation(
+            summary = "로그인",
+            description = "아이디와 비밀번호를 입력하여 JWT를 발급받습니다."
+    )
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO request,
                                    HttpServletResponse response) {
@@ -58,6 +65,8 @@ public class AuthController {
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
 
-        return ResponseEntity.ok("로그인 성공");
+        LoginResponseDTO tokenResponse = new LoginResponseDTO("로그인성공" ,accessToken, refreshToken);
+
+        return ResponseEntity.ok(tokenResponse);
     }
 }
