@@ -23,6 +23,10 @@ application.yml
 ### 암호와 비번 생성기 ###
 BcryptGenerator.java
 
+### h2 관련 설정 ###
+*.mv.db
+*.trace.db
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
