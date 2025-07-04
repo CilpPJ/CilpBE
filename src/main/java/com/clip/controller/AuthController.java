@@ -4,6 +4,9 @@ import com.clip.config.security.CustomUserDetailsService;
 import com.clip.config.security.JwtService;
 import com.clip.dto.LoginRequestDTO;
 import com.clip.dto.LoginResponseDTO;
+import com.clip.dto.SignUpRequestDTO;
+import com.clip.dto.SignUpResponseDTO;
+import com.clip.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +28,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
     private final JwtService jwtService;
+    private final UserService userService;
 
     @Operation(
             summary = "로그인",
@@ -68,5 +72,15 @@ public class AuthController {
         LoginResponseDTO tokenResponse = new LoginResponseDTO("로그인성공" ,accessToken, refreshToken);
 
         return ResponseEntity.ok(tokenResponse);
+    }
+
+    @Operation(
+            summary = "회원가입",
+            description = "아이디와 비밀번호, 닉네임을 입력하여 회원가입합니다"
+    )
+    @PostMapping("/signup")
+    public ResponseEntity<SignUpResponseDTO> signUp(@RequestBody SignUpRequestDTO request) {
+        SignUpResponseDTO response = userService.signUp(request);
+        return ResponseEntity.ok(response);
     }
 }
