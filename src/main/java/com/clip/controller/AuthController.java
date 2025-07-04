@@ -50,17 +50,17 @@ public class AuthController {
         String accessToken = jwtService.generateAccessToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-        // 4. 쿠키 생성
+        // 4. 쿠키 생성 (운영할때 반드시 secure설정을 true로해서 https만 가능하게 해야한다)
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(60 * 15) // 15분
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(60 * 60 * 24 * 7) // 7일
                 .build();
