@@ -38,7 +38,7 @@ public class UserService {
        boolean isDuplication = userRepository.existsByUserId(userId);
 
        if (isDuplication){
-           throw new DuplicateUserIdException("이미 사용 중인 아이디입니다.");
+           throw new DuplicateUserIdException(userId);
        }
 
        return new DuplicationResponseDTO(isDuplication, "사용 가능한 값입니다.");
@@ -48,7 +48,7 @@ public class UserService {
         boolean isDuplication = userRepository.existsByNickName(nickName);
 
         if (isDuplication){
-            throw new DuplicateUserIdException("이미 사용 중인 닉네임입니다.");
+            throw new DuplicateNickNameException(nickName);
         }
 
         return new DuplicationResponseDTO(isDuplication, "사용 가능한 닉네임입니다.");

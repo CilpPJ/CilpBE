@@ -81,7 +81,7 @@ public class AuthController {
             summary = "아이디 중복확인",
             description = "아이디 중복확인을 합니다"
     )
-    @PostMapping("/check/duplicate/{userId}")
+    @PostMapping("/check/duplicateId/{userId}")
     public ResponseEntity<DuplicationResponseDTO> userIdDuplicationCheck(@PathVariable String userId){
         DuplicationResponseDTO response = userService.checkUserId(userId);
         return ResponseEntity.ok(response);
@@ -91,7 +91,7 @@ public class AuthController {
             summary = "닉네임 중복확인",
             description = "닉네임 중복확인을 합니다"
     )
-    @PostMapping("/check/duplicate/{nickName}")
+    @PostMapping("/check/duplicateNickName/{nickName}")
     public ResponseEntity<DuplicationResponseDTO> nickNameDuplicationCheck(@PathVariable String nickName){
         DuplicationResponseDTO response = userService.checkNickName(nickName);
         return ResponseEntity.ok(response);

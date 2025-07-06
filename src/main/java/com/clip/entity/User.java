@@ -20,6 +20,6 @@ public class User {
     @Column(nullable = false, length = 200)
     private String password;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String nickName;
 }
