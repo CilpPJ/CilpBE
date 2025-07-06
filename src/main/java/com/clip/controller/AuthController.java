@@ -2,13 +2,9 @@ package com.clip.controller;
 
 import com.clip.config.security.CustomUserDetailsService;
 import com.clip.config.security.JwtService;
-import com.clip.dto.LoginRequestDTO;
-import com.clip.dto.LoginResponseDTO;
-import com.clip.dto.SignUpRequestDTO;
-import com.clip.dto.SignUpResponseDTO;
+import com.clip.dto.*;
 import com.clip.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
@@ -16,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -81,6 +74,26 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponseDTO> signUp(@RequestBody SignUpRequestDTO request) {
         SignUpResponseDTO response = userService.signUp(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "아이디 중복확인",
+            description = "아이디 중복확인을 합니다"
+    )
+    @PostMapping("/check/duplicate/{userId}")
+    public ResponseEntity<DuplicationResponseDTO> userIdDuplicationCheck(@PathVariable String userId){
+        DuplicationResponseDTO response = userService.checkUserId(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "닉네임 중복확인",
+            description = "닉네임 중복확인을 합니다"
+    )
+    @PostMapping("/check/duplicate/{nickName}")
+    public ResponseEntity<DuplicationResponseDTO> nickNameDuplicationCheck(@PathVariable String nickName){
+        DuplicationResponseDTO response = userService.checkNickName(nickName);
         return ResponseEntity.ok(response);
     }
 }
