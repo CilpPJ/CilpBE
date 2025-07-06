@@ -1,6 +1,8 @@
 package com.clip.service;
 
+import com.clip.config.exception.DuplicateNickNameException;
 import com.clip.config.exception.DuplicateUserIdException;
+import com.clip.dto.DuplicationResponseDTO;
 import com.clip.dto.SignUpRequestDTO;
 import com.clip.dto.SignUpResponseDTO;
 import com.clip.entity.User;
@@ -30,4 +32,26 @@ public class UserService {
 
         return new SignUpResponseDTO("회원가입이 완료되었습니다.");
     }
+
+    public DuplicationResponseDTO checkUserId(String userId) {
+
+       boolean isDuplication = userRepository.existsByUserId(userId);
+
+       if (isDuplication){
+           throw new DuplicateUserIdException("이미 사용 중인 아이디입니다.");
+       }
+
+       return new DuplicationResponseDTO(isDuplication, "사용 가능한 값입니다.");
+    }
+
+    public DuplicationResponseDTO checkNickName(String nickName) {
+        boolean isDuplication = userRepository.existsByNickName(nickName);
+
+        if (isDuplication){
+            throw new DuplicateUserIdException("이미 사용 중인 닉네임입니다.");
+        }
+
+        return new DuplicationResponseDTO(isDuplication, "사용 가능한 닉네임입니다.");
+    }
+
 }
