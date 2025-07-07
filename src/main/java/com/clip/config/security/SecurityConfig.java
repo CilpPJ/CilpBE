@@ -46,8 +46,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(
                                 "/",
+                                "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
+                                "/v3/api-docs",
                                 "/h2-console/**",
                                 "/api/auth/**").permitAll()
                         .anyRequest().authenticated()) // anyRequest는 항상 마지막에 지정
