@@ -63,7 +63,6 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header("Set-Cookie", accessCookie.toString())
                 .header("Set-Cookie", refreshCookie.toString())
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Swagger용
                 .body(new LoginResponseDTO("로그인 성공"));
     }
 
