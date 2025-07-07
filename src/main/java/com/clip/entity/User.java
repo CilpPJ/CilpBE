@@ -1,10 +1,10 @@
 package com.clip.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User extends BaseTimeEntity {
     @Id
     @Column(length = 50)
     private String userId;  // 유저 ID (로그인용 ID, 이메일 아님)
@@ -22,4 +22,10 @@ public class User {
 
     @Column(nullable = false, length = 50, unique = true)
     private String nickName;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Clip> clips = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Tag> Tag = new ArrayList<>();
 }

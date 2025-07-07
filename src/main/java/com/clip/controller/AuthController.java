@@ -7,6 +7,7 @@ import com.clip.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -58,13 +59,12 @@ public class AuthController {
                 .maxAge(60 * 60 * 24 * 7) // 7일
                 .build();
 
-        // 5. 쿠키 응답에 담기
-        response.addHeader("Set-Cookie", accessCookie.toString());
-        response.addHeader("Set-Cookie", refreshCookie.toString());
-
-        LoginResponseDTO tokenResponse = new LoginResponseDTO("로그인성공" ,accessToken, refreshToken);
-
-        return ResponseEntity.ok(tokenResponse);
+        // 5. 응답 구성
+        return ResponseEntity.ok()
+                .header("Set-Cookie", accessCookie.toString())
+                .header("Set-Cookie", refreshCookie.toString())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Swagger용
+                .body(new LoginResponseDTO("로그인 성공"));
     }
 
     @Operation(

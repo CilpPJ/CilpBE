@@ -29,28 +29,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // ✅ 1. 쿠키에서 accessToken 꺼내기
+        System.out.println("[JwtFilter] 실행됨: " + request.getRequestURI());
+
+        // 1. 쿠키에서 accessToken 꺼내기
         String jwt = extractTokenFromCookies(request);
         if (jwt == null) {
+            System.out.println("[JwtFilter] accessToken 쿠키 없음");
             filterChain.doFilter(request, response);
             return;
         }
+        System.out.println("[JwtFilter] accessToken 쿠키 추출됨: " + jwt);
 
         // 2. 토큰에서 userId 추출
         String userId = jwtService.extractUserId(jwt);
+        System.out.println("[JwtFilter] 토큰에서 추출한 userId: " + userId);
 
         // 3. 인증 안 되어있으면 인증 시도
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            System.out.println("[JwtFilter] 인증 진행 시작 - SecurityContext 비어 있음");
+
             UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+            System.out.println("[JwtFilter] userDetails 로드됨: " + userDetails.getUsername());
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
+                                userDetails.getUsername(), null, userDetails.getAuthorities());
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                System.out.println("[JwtFilter] SecurityContextHolder에 인증 객체 주입 완료");
+            } else {
+                System.out.println("[JwtFilter] 유효하지 않은 토큰");
             }
+        } else {
+            System.out.println("[JwtFilter] 인증 이미 되어있음 또는 userId 없음");
         }
 
         filterChain.doFilter(request, response);

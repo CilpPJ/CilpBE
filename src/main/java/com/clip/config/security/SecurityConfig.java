@@ -46,12 +46,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**",
                                 "/api-docs", "/api-docs/**", "/v3/api-docs/**",
-                                "/h2-console/**").permitAll()
-                        .requestMatchers("/**").permitAll() // 개발중이라 모든걸 로그인 없어도 되게 열어놓음
+                                "/h2-console/**", "/api/auth/**").permitAll()
                         .anyRequest().authenticated()) // anyRequest는 항상 마지막에 지정
 
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 실제 쿠키 인증 필터
+
 
         return http.build();
     }
