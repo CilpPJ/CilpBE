@@ -44,11 +44,13 @@ public class SecurityConfig {
                 )
                 //경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**",
-                                "/api-docs", "/api-docs/**", "/v3/api-docs/**",
-                                "/h2-console/**", "/api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/h2-console/**",
+                                "/api/auth/**").permitAll()
                         .anyRequest().authenticated()) // anyRequest는 항상 마지막에 지정
-
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 실제 쿠키 인증 필터
 
