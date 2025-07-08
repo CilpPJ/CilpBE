@@ -3,6 +3,7 @@ package com.clip.controller;
 import com.clip.dto.clip.CreateClipRequestDTO;
 import com.clip.dto.clip.CreateClipResponseDTO;
 import com.clip.dto.clip.GetClipResponseDTO;
+import com.clip.dto.clip.GetDetailClipResponseDTO;
 import com.clip.service.ClipService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/clips")
@@ -50,6 +49,19 @@ public class ClipController {
     {
         Page<GetClipResponseDTO> responsePage = clipService.getAllClips(userId, pageable);
         return responsePage;
+    }
+
+    @Operation(
+            summary = "클립 상세 내역 조회",
+            description = "특정 클립의 상세 내역을 가져옵니다. "
+    )
+    @GetMapping("/{clipId}")
+    public ResponseEntity<GetDetailClipResponseDTO> getClip(
+            @PathVariable Long clipId,
+            @AuthenticationPrincipal String userId
+    ){
+        GetDetailClipResponseDTO response = clipService.getDetailClip(userId, clipId);
+        return ResponseEntity.ok(response);
     }
 
 }

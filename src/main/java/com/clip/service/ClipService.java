@@ -3,6 +3,7 @@ package com.clip.service;
 import com.clip.dto.clip.CreateClipRequestDTO;
 import com.clip.dto.clip.CreateClipResponseDTO;
 import com.clip.dto.clip.GetClipResponseDTO;
+import com.clip.dto.clip.GetDetailClipResponseDTO;
 import com.clip.entity.Clip;
 import com.clip.entity.Tag;
 import com.clip.entity.User;
@@ -66,6 +67,12 @@ public class ClipService {
     public Page<GetClipResponseDTO> getAllClips(String userId, Pageable pageable){
         Page<GetClipResponseDTO> responsePage = clipRepository.findAllClipByUserId(userId, pageable);
         return responsePage;
+    }
+
+    // 클립 상세 내역 조회
+    public GetDetailClipResponseDTO getDetailClip(String userId, Long clipId){
+        GetDetailClipResponseDTO response = clipRepository.findClipByUserId(userId, clipId);
+        return response;
     }
 
 }
