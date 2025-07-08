@@ -1,9 +1,6 @@
 package com.clip.service;
 
-import com.clip.dto.clip.CreateClipRequestDTO;
-import com.clip.dto.clip.CreateClipResponseDTO;
-import com.clip.dto.clip.GetClipResponseDTO;
-import com.clip.dto.clip.GetDetailClipResponseDTO;
+import com.clip.dto.clip.*;
 import com.clip.entity.Clip;
 import com.clip.entity.Tag;
 import com.clip.entity.User;
@@ -14,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -24,7 +22,7 @@ public class ClipService {
     private final ClipRepository clipRepository;
     private final TagRepository tagRepository;
 
-    // 페이지 생성하기
+    // 클립 생성하기
     public CreateClipResponseDTO createClip(String userId, CreateClipRequestDTO request) {
         User user = getUserById(userId);
         Tag tag = getOrCreateTag(request.getTagName(), user);
@@ -71,7 +69,28 @@ public class ClipService {
 
     // 클립 상세 내역 조회
     public GetDetailClipResponseDTO getDetailClip(String userId, Long clipId){
-        GetDetailClipResponseDTO response = clipRepository.findClipByUserId(userId, clipId);
+        GetDetailClipResponseDTO response = clipRepository.findClipByUserIdAndClipId(userId, clipId)
+                .orElseThrow(() -> new IllegalArgumentException("클립이 존재하지 않습니다"));
+        return response;
+    }
+
+    // 클립 내용 수정
+    @Transactional
+    public UpdateClipResponseDTO updateDetailClip(String userId, Long clipId, UpdateClipRequestDTO request){
+        // 클립 내용 가져오기(그 클립이 있는지부터 확인)
+        Clip clip = clipRepository.findByUser_UserIdAndClipId(userId, clipId)
+                .orElseThrow(() -> new IllegalArgumentException("클립이 존재하지 않습니다"));
+
+        // 클립 수정하기
+        User user = getUserById(userId);
+        Tag tag = getOrCreateTag(request.getTagName(), user);
+
+        // 도메인 메서드로 필드 변경
+        clip.updateClipInfo(request.getTitle(), request.getUrl(), request.getMemo(), tag);
+
+        // @Transactional + dirty checking → 자동 저장
+        UpdateClipResponseDTO response = new UpdateClipResponseDTO("클립이 성공적으로 수정되었습니다.", clip.getClipId());
+
         return response;
     }
 

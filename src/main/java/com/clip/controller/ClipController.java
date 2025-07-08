@@ -1,9 +1,6 @@
 package com.clip.controller;
 
-import com.clip.dto.clip.CreateClipRequestDTO;
-import com.clip.dto.clip.CreateClipResponseDTO;
-import com.clip.dto.clip.GetClipResponseDTO;
-import com.clip.dto.clip.GetDetailClipResponseDTO;
+import com.clip.dto.clip.*;
 import com.clip.service.ClipService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +58,20 @@ public class ClipController {
             @AuthenticationPrincipal String userId
     ){
         GetDetailClipResponseDTO response = clipService.getDetailClip(userId, clipId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "클립 내용 수정",
+            description = "특정 클립의 내용을 수정합니다 "
+    )
+    @PutMapping("/{clipId}")
+    public ResponseEntity<UpdateClipResponseDTO> updateClip(
+            @PathVariable Long clipId,
+            @RequestBody UpdateClipRequestDTO request,
+            @AuthenticationPrincipal String userId
+    ){
+        UpdateClipResponseDTO response = clipService.updateDetailClip(userId, clipId, request);
         return ResponseEntity.ok(response);
     }
 

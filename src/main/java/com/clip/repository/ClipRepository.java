@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface ClipRepository extends JpaRepository<Clip, Long> {
     @Query("SELECT new com.clip.dto.clip.GetClipResponseDTO(" +
             "c.title, c.tag.tagId, c.tag.tagName, c.memo, c.createdAt) " +
@@ -20,5 +22,7 @@ public interface ClipRepository extends JpaRepository<Clip, Long> {
             "c.clipId, c.title, c.url, c.memo, c.tag.tagId, c.tag.tagName, c.createdAt) " +
             "FROM Clip c " +
             "WHERE c.user.userId = :userId AND c.clipId = :clipId")
-    GetDetailClipResponseDTO findClipByUserId(@Param("userId") String userId, Long clipId);
+    Optional<GetDetailClipResponseDTO> findClipByUserIdAndClipId(@Param("userId") String userId, Long clipId);
+
+    Optional<Clip> findByUser_UserIdAndClipId(String userId, Long clipId);
 }
