@@ -8,11 +8,11 @@ import com.clip.repository.ClipRepository;
 import com.clip.repository.TagRepository;
 import com.clip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -63,9 +63,14 @@ public class ClipService {
     }
 
     // 모든 클립 무한스크롤 기반으로 가져오기
-    public Page<GetClipResponseDTO> getAllClips(String userId, Pageable pageable){
-        Page<GetClipResponseDTO> responsePage = clipRepository.findAllClipByUserId(userId, pageable);
-        return responsePage;
+    public Slice<GetClipResponseDTO> getAllClips(String userId, String lastCreatedAt, int size){
+        LocalDateTime cursor = lastCreatedAt != null
+                ? LocalDateTime.parse(lastCreatedAt)
+                : LocalDateTime.now(); // 첫 페이지면 지금 기준
+
+        Slice<GetClipResponseDTO> response = clipRepository.findByUserIdAndCreatedAtBefore(userId, cursor, PageRequest.of(0, size, Sort.by("createdAt").descending()));
+
+        return response;
     }
 
     // 클립 상세 내역 조회

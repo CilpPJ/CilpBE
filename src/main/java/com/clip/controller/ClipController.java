@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -39,13 +40,13 @@ public class ClipController {
             description = "모든 클립의 제목, 태그이름, 메모, 생성시간과 무한스크롤 관련정보를 가져옵니다,"
     )
     @GetMapping("")
-    public Page<GetClipResponseDTO> getAllClips(
-            @ParameterObject
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+    public Slice<GetClipResponseDTO> getAllClips(
+            @RequestParam(required = false) String lastCreatedAt, // 커서 값
+            @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal String userId)
     {
-        Page<GetClipResponseDTO> responsePage = clipService.getAllClips(userId, pageable);
-        return responsePage;
+        Slice<GetClipResponseDTO> response= clipService.getAllClips(userId, lastCreatedAt, size);
+        return response;
     }
 
     @Operation(
