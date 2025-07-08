@@ -23,6 +23,7 @@ public class ClipService {
     private final TagRepository tagRepository;
 
     // 클립 생성하기
+    @Transactional
     public CreateClipResponseDTO createClip(String userId, CreateClipRequestDTO request) {
         User user = getUserById(userId);
         Tag tag = getOrCreateTag(request.getTagName(), user);
@@ -90,6 +91,22 @@ public class ClipService {
 
         // @Transactional + dirty checking → 자동 저장
         UpdateClipResponseDTO response = new UpdateClipResponseDTO("클립이 성공적으로 수정되었습니다.", clip.getClipId());
+
+        return response;
+    }
+
+    //클립 삭제
+    @Transactional
+    public DeleteClipResponseDTO deleteClip(String userId, Long clipId){
+        // 해당 클립이 존재하고, 내가 소유자인지 확인
+        Clip clip = clipRepository.findByUser_UserIdAndClipId(userId, clipId)
+                .orElseThrow(() -> new IllegalArgumentException("클립이 존재하지 않습니다"));
+
+        // 삭제
+        clipRepository.delete(clip);
+
+        // 응답
+        DeleteClipResponseDTO response = new DeleteClipResponseDTO("클립 삭제 완료");
 
         return response;
     }

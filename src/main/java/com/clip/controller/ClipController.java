@@ -75,4 +75,17 @@ public class ClipController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+            summary = "클립 삭제",
+            description = "특정 클립을 삭제합니다 "
+    )
+    @DeleteMapping("/{clipId}")
+    public ResponseEntity<DeleteClipResponseDTO> deleteClip(
+            @PathVariable Long clipId,
+            @AuthenticationPrincipal String userId
+    ){
+        DeleteClipResponseDTO response = clipService.deleteClip(userId, clipId);
+        return ResponseEntity.ok(response);
+    }
+
 }
