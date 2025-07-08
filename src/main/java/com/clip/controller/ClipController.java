@@ -2,16 +2,20 @@ package com.clip.controller;
 
 import com.clip.dto.clip.CreateClipRequestDTO;
 import com.clip.dto.clip.CreateClipResponseDTO;
+import com.clip.dto.clip.GetClipResponseDTO;
 import com.clip.service.ClipService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/clips")
@@ -24,7 +28,7 @@ public class ClipController {
             summary = "클립 생성",
             description = "클립을 생성하는 api입니다"
     )
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<CreateClipResponseDTO> createClip(
             @AuthenticationPrincipal String userId,
             @RequestBody CreateClipRequestDTO request)
@@ -32,6 +36,20 @@ public class ClipController {
         CreateClipResponseDTO response = clipService.createClip(userId, request);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "클립 전체 조회",
+            description = "모든 클립의 제목, 태그이름, 메모, 생성시간과 무한스크롤 관련정보를 가져옵니다,"
+    )
+    @GetMapping("")
+    public Page<GetClipResponseDTO> getAllClips(
+            @ParameterObject
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal String userId)
+    {
+        Page<GetClipResponseDTO> responsePage = clipService.getAllClips(userId, pageable);
+        return responsePage;
     }
 
 }

@@ -2,6 +2,7 @@ package com.clip.service;
 
 import com.clip.dto.clip.CreateClipRequestDTO;
 import com.clip.dto.clip.CreateClipResponseDTO;
+import com.clip.dto.clip.GetClipResponseDTO;
 import com.clip.entity.Clip;
 import com.clip.entity.Tag;
 import com.clip.entity.User;
@@ -9,6 +10,8 @@ import com.clip.repository.ClipRepository;
 import com.clip.repository.TagRepository;
 import com.clip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,6 +23,7 @@ public class ClipService {
     private final ClipRepository clipRepository;
     private final TagRepository tagRepository;
 
+    // 페이지 생성하기
     public CreateClipResponseDTO createClip(String userId, CreateClipRequestDTO request) {
         User user = getUserById(userId);
         Tag tag = getOrCreateTag(request.getTagName(), user);
@@ -56,6 +60,12 @@ public class ClipService {
 
             return tagRepository.save(newTag);
         }
+    }
+
+    // 모든 클립 무한스크롤 기반으로 가져오기
+    public Page<GetClipResponseDTO> getAllClips(String userId, Pageable pageable){
+        Page<GetClipResponseDTO> responsePage = clipRepository.findAllClipByUserId(userId, pageable);
+        return responsePage;
     }
 
 }

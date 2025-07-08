@@ -31,7 +31,7 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
         http
                 .csrf((auth) -> auth.disable())
                 .formLogin((auth) -> auth.disable())
@@ -53,6 +53,9 @@ public class SecurityConfig {
                                 "/api/auth/**").permitAll()
                         .anyRequest().authenticated()) // anyRequest는 항상 마지막에 지정
                 .authenticationProvider(authenticationProvider())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(customAuthenticationEntryPoint) // 🔥 여기!
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 실제 쿠키 인증 필터
 
 
