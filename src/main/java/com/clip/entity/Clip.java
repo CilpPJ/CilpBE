@@ -33,4 +33,12 @@ public class Clip extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tagId")
     private Tag tag;
+
+    public void updateClipInfo(String title, String url, String memo, Tag tag) {
+        this.title = title;
+        this.url = url;
+        this.memo = memo;
+        this.tag = tag;
+    }
+
 }

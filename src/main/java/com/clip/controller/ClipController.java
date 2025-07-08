@@ -1,8 +1,6 @@
 package com.clip.controller;
 
-import com.clip.dto.clip.CreateClipRequestDTO;
-import com.clip.dto.clip.CreateClipResponseDTO;
-import com.clip.dto.clip.GetClipResponseDTO;
+import com.clip.dto.clip.*;
 import com.clip.service.ClipService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +12,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/clips")
@@ -50,6 +46,46 @@ public class ClipController {
     {
         Page<GetClipResponseDTO> responsePage = clipService.getAllClips(userId, pageable);
         return responsePage;
+    }
+
+    @Operation(
+            summary = "클립 상세 내역 조회",
+            description = "특정 클립의 상세 내역을 가져옵니다. "
+    )
+    @GetMapping("/{clipId}")
+    public ResponseEntity<GetDetailClipResponseDTO> getClip(
+            @PathVariable Long clipId,
+            @AuthenticationPrincipal String userId
+    ){
+        GetDetailClipResponseDTO response = clipService.getDetailClip(userId, clipId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "클립 내용 수정",
+            description = "특정 클립의 내용을 수정합니다 "
+    )
+    @PutMapping("/{clipId}")
+    public ResponseEntity<UpdateClipResponseDTO> updateClip(
+            @PathVariable Long clipId,
+            @RequestBody UpdateClipRequestDTO request,
+            @AuthenticationPrincipal String userId
+    ){
+        UpdateClipResponseDTO response = clipService.updateDetailClip(userId, clipId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "클립 삭제",
+            description = "특정 클립을 삭제합니다 "
+    )
+    @DeleteMapping("/{clipId}")
+    public ResponseEntity<DeleteClipResponseDTO> deleteClip(
+            @PathVariable Long clipId,
+            @AuthenticationPrincipal String userId
+    ){
+        DeleteClipResponseDTO response = clipService.deleteClip(userId, clipId);
+        return ResponseEntity.ok(response);
     }
 
 }
