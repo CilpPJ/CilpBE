@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class GetClipResponseDTO {
     private String title;
     private Long tagId;
+    private String url;
     private String tagName;
     private String memo;
     private LocalDateTime createdAt;

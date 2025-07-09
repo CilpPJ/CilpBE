@@ -31,6 +31,8 @@ public class CustomUserDetails implements UserDetails {
         return user.getUserId();  // 로그인 식별자 (userId 필드)
     }
 
+    public String getNickName() { return user.getNickName(); }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;  // 계정 만료 여부 (필요 시 DB 필드 추가해서 관리)

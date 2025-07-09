@@ -1,5 +1,6 @@
 package com.clip.controller;
 
+import com.clip.config.security.CustomUserDetails;
 import com.clip.config.security.CustomUserDetailsService;
 import com.clip.config.security.JwtService;
 import com.clip.dto.*;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,6 +96,18 @@ public class AuthController {
     @PostMapping("/check/duplicateNickName/{nickName}")
     public ResponseEntity<DuplicationResponseDTO> nickNameDuplicationCheck(@PathVariable String nickName){
         DuplicationResponseDTO response = userService.checkNickName(nickName);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "유저 정보 가져오기",
+            description = "유저 정보를 가져옵니다"
+    )
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> checkLogin(
+            @AuthenticationPrincipal String userId
+    ){
+        UserDTO response = userService.getUser(userId);
         return ResponseEntity.ok(response);
     }
 }
