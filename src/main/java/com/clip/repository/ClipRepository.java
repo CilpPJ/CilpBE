@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface ClipRepository extends JpaRepository<Clip, Long> {
     @Query("SELECT new com.clip.dto.clip.GetClipResponseDTO(" +
-            "c.title, c.tag.tagId, c.tag.tagName, c.memo, c.createdAt) " +
+            "c.title, c.tag.tagId, c.tag.tagName, c.url, c.memo, c.createdAt) " +
             "FROM Clip c " +
             "WHERE c.user.userId = :userId AND c.createdAt < :cursor " +
             "ORDER BY c.createdAt DESC")

@@ -2,9 +2,12 @@ package com.clip.service;
 
 import com.clip.config.exception.DuplicateNickNameException;
 import com.clip.config.exception.DuplicateUserIdException;
+import com.clip.config.security.CustomUserDetails;
+import com.clip.config.security.CustomUserDetailsService;
 import com.clip.dto.DuplicationResponseDTO;
 import com.clip.dto.SignUpRequestDTO;
 import com.clip.dto.SignUpResponseDTO;
+import com.clip.dto.UserDTO;
 import com.clip.entity.User;
 import com.clip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CustomUserDetailsService customUserDetailsService;
 
     public SignUpResponseDTO signUp(SignUpRequestDTO request) {
         if (userRepository.existsById(request.getUserId())){
@@ -52,6 +56,18 @@ public class UserService {
         }
 
         return new DuplicationResponseDTO(isDuplication, "사용 가능한 닉네임입니다.");
+    }
+
+    // 유저정보 가져오기
+    public UserDTO getUser(String userId) {
+        if (userId == null) {
+            return new UserDTO(false, null, null);
+        }
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) customUserDetailsService.loadUserByUsername(userId);
+
+        return new UserDTO(true, userDetails.getUsername(), userDetails.getNickName());
     }
 
 }
