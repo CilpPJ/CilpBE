@@ -4,6 +4,7 @@ import com.clip.config.security.CustomUserDetails;
 import com.clip.config.security.CustomUserDetailsService;
 import com.clip.config.security.JwtService;
 import com.clip.dto.*;
+import com.clip.dto.common.Response;
 import com.clip.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,8 +33,9 @@ public class AuthController {
             description = "아이디와 비밀번호를 입력하여 JWT를 발급받습니다."
     )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO request,
-                                   HttpServletResponse response) {
+    public ResponseEntity<Response<LoginResponseDTO>> login(
+            @RequestBody LoginRequestDTO request
+    ) {
 
         // 1. 아이디/비번 검증
         authenticationManager.authenticate(
@@ -66,7 +68,7 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header("Set-Cookie", accessCookie.toString())
                 .header("Set-Cookie", refreshCookie.toString())
-                .body(new LoginResponseDTO("로그인 성공"));
+                .body(Response.success(new LoginResponseDTO("로그인 성공")));
     }
 
     @Operation(
@@ -74,9 +76,8 @@ public class AuthController {
             description = "아이디와 비밀번호, 닉네임을 입력하여 회원가입합니다"
     )
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponseDTO> signUp(@RequestBody SignUpRequestDTO request) {
-        SignUpResponseDTO response = userService.signUp(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Response<SignUpResponseDTO>> signUp(@RequestBody SignUpRequestDTO request) {
+        return ResponseEntity.ok(Response.success(userService.signUp(request)));
     }
 
     @Operation(
@@ -84,9 +85,8 @@ public class AuthController {
             description = "아이디 중복확인을 합니다"
     )
     @PostMapping("/check/duplicateId/{userId}")
-    public ResponseEntity<DuplicationResponseDTO> userIdDuplicationCheck(@PathVariable String userId){
-        DuplicationResponseDTO response = userService.checkUserId(userId);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Response<DuplicationResponseDTO>> userIdDuplicationCheck(@PathVariable String userId){
+        return ResponseEntity.ok(Response.success(userService.checkUserId(userId)));
     }
 
     @Operation(
@@ -94,9 +94,8 @@ public class AuthController {
             description = "닉네임 중복확인을 합니다"
     )
     @PostMapping("/check/duplicateNickName/{nickName}")
-    public ResponseEntity<DuplicationResponseDTO> nickNameDuplicationCheck(@PathVariable String nickName){
-        DuplicationResponseDTO response = userService.checkNickName(nickName);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Response<DuplicationResponseDTO>> nickNameDuplicationCheck(@PathVariable String nickName){
+        return ResponseEntity.ok(Response.success(userService.checkNickName(nickName)));
     }
 
     @Operation(
@@ -104,10 +103,9 @@ public class AuthController {
             description = "유저 정보를 가져옵니다"
     )
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> checkLogin(
+    public ResponseEntity<Response<UserDTO>> checkLogin(
             @AuthenticationPrincipal String userId
     ){
-        UserDTO response = userService.getUser(userId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Response.success(userService.getUser(userId)));
     }
 }

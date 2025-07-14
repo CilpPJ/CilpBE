@@ -1,6 +1,7 @@
 package com.clip.controller;
 
 import com.clip.dto.clip.*;
+import com.clip.dto.common.Response;
 import com.clip.service.ClipService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +27,11 @@ public class ClipController {
             description = "클립을 생성하는 api입니다"
     )
     @PostMapping("")
-    public ResponseEntity<CreateClipResponseDTO> createClip(
+    public ResponseEntity<Response<CreateClipResponseDTO>> createClip(
             @AuthenticationPrincipal String userId,
             @RequestBody CreateClipRequestDTO request)
     {
-        CreateClipResponseDTO response = clipService.createClip(userId, request);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Response.success(clipService.createClip(userId, request)));
     }
 
     @Operation(
@@ -40,13 +39,12 @@ public class ClipController {
             description = "모든 클립의 제목, 태그이름, 메모, 생성시간과 무한스크롤 관련정보를 가져옵니다,"
     )
     @GetMapping("")
-    public Slice<GetClipResponseDTO> getAllClips(
+    public ResponseEntity<Response<Slice<GetClipResponseDTO>>> getAllClips(
             @RequestParam(required = false) String lastCreatedAt, // 커서 값
             @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal String userId)
     {
-        Slice<GetClipResponseDTO> response= clipService.getAllClips(userId, lastCreatedAt, size);
-        return response;
+        return ResponseEntity.ok(Response.success(clipService.getAllClips(userId, lastCreatedAt, size)));
     }
 
     @Operation(
@@ -54,12 +52,11 @@ public class ClipController {
             description = "특정 클립의 상세 내역을 가져옵니다. "
     )
     @GetMapping("/{clipId}")
-    public ResponseEntity<GetDetailClipResponseDTO> getClip(
+    public ResponseEntity<Response<GetDetailClipResponseDTO>> getClip(
             @PathVariable Long clipId,
             @AuthenticationPrincipal String userId
     ){
-        GetDetailClipResponseDTO response = clipService.getDetailClip(userId, clipId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Response.success(clipService.getDetailClip(userId, clipId)));
     }
 
     @Operation(
@@ -67,13 +64,12 @@ public class ClipController {
             description = "특정 클립의 내용을 수정합니다 "
     )
     @PutMapping("/{clipId}")
-    public ResponseEntity<UpdateClipResponseDTO> updateClip(
+    public ResponseEntity<Response<UpdateClipResponseDTO>> updateClip(
             @PathVariable Long clipId,
             @RequestBody UpdateClipRequestDTO request,
             @AuthenticationPrincipal String userId
     ){
-        UpdateClipResponseDTO response = clipService.updateDetailClip(userId, clipId, request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Response.success(clipService.updateDetailClip(userId, clipId, request)));
     }
 
     @Operation(
@@ -81,12 +77,11 @@ public class ClipController {
             description = "특정 클립을 삭제합니다 "
     )
     @DeleteMapping("/{clipId}")
-    public ResponseEntity<DeleteClipResponseDTO> deleteClip(
+    public ResponseEntity<Response<DeleteClipResponseDTO>> deleteClip(
             @PathVariable Long clipId,
             @AuthenticationPrincipal String userId
     ){
-        DeleteClipResponseDTO response = clipService.deleteClip(userId, clipId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Response.success(clipService.deleteClip(userId, clipId)));
     }
 
 }
