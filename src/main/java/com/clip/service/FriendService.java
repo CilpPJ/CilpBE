@@ -1,9 +1,6 @@
 package com.clip.service;
 
-import com.clip.config.exception.AlreadyFriendException;
-import com.clip.config.exception.AlreadyRequestedException;
-import com.clip.config.exception.AskMeFriendRequestException;
-import com.clip.config.exception.UserNotFoundException;
+import com.clip.config.exception.*;
 import com.clip.dto.friend.SendFriendRequestDTO;
 import com.clip.dto.friend.SendFriendResponseDTO;
 import com.clip.entity.Friend;
@@ -27,11 +24,11 @@ public class FriendService {
     public SendFriendResponseDTO sendFriendRequest(String fromId, SendFriendRequestDTO request){
         // 닉네임으로 상대 유저 조회
         User toUser = userRepository.findByNickName(request.getNickName())
-                .orElseThrow(() -> new UserNotFoundException("해당 닉네임을 가진 유저가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException("USER_NOT_FOUND", "해당 유저가 존재하지 않습니다"));
 
         // 본인에게 친구 요청 방지
         if (toUser.getUserId().equals(fromId)) {
-            throw new AskMeFriendRequestException("본인에게 친구 요청을 보낼 수 없습니다.");
+            throw new CustomException("SEND_MYSELF", "자기 자신에게 친구요청 할 수 없습니다");
         }
 
         // 친구 요청이 예외 사항 로직
@@ -41,9 +38,9 @@ public class FriendService {
             Friend friend = friendRequestStatus.get();
             switch (friend.getStatus()) {
                 case REQUEST:
-                    throw new AlreadyRequestedException("이미 친구 요청을 보냈거나 받은 상태입니다.");
+                    throw new CustomException("AlREADY_REQIESTED" ,"이미 친구 요청을 보냈거나 받은 상태입니다.");
                 case ACCEPT:
-                    throw new AlreadyFriendException("이미 친구 상태입니다.");
+                    throw new CustomException("AlREADY_FRIENDS" ,"이미 친구 상태입니다.");
             }
         }
 

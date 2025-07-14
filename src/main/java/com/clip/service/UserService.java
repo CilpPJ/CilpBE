@@ -1,7 +1,6 @@
 package com.clip.service;
 
-import com.clip.config.exception.DuplicateNickNameException;
-import com.clip.config.exception.DuplicateUserIdException;
+import com.clip.config.exception.CustomException;
 import com.clip.config.security.CustomUserDetails;
 import com.clip.config.security.CustomUserDetailsService;
 import com.clip.dto.DuplicationResponseDTO;
@@ -21,9 +20,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
 
+    //회원가입
     public SignUpResponseDTO signUp(SignUpRequestDTO request) {
         if (userRepository.existsById(request.getUserId())){
-            throw new DuplicateUserIdException(request.getUserId());
+            throw new CustomException("DUPLICATION_ID", "아이디가 중복됩니다");
         }
 
         User user = User.builder()
@@ -37,12 +37,13 @@ public class UserService {
         return new SignUpResponseDTO("회원가입이 완료되었습니다.");
     }
 
+    // 중복체크
     public DuplicationResponseDTO checkUserId(String userId) {
 
        boolean isDuplication = userRepository.existsByUserId(userId);
 
        if (isDuplication){
-           throw new DuplicateUserIdException(userId);
+           throw new CustomException("DUPLICATION_ID", "아이디가 중복됩니다");
        }
 
        return new DuplicationResponseDTO(isDuplication, "사용 가능한 값입니다.");
@@ -52,7 +53,7 @@ public class UserService {
         boolean isDuplication = userRepository.existsByNickName(nickName);
 
         if (isDuplication){
-            throw new DuplicateNickNameException(nickName);
+            throw new CustomException("DUPLICATION_NICKNAME", "닉네임이 중복됩니다");
         }
 
         return new DuplicationResponseDTO(isDuplication, "사용 가능한 닉네임입니다.");

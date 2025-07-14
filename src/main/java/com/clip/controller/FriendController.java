@@ -1,5 +1,6 @@
 package com.clip.controller;
 
+import com.clip.dto.common.Response;
 import com.clip.dto.friend.SendFriendRequestDTO;
 import com.clip.dto.friend.SendFriendResponseDTO;
 import com.clip.service.FriendService;
@@ -23,11 +24,10 @@ public class FriendController {
             description = "친구 요청을 보내는 api입니다"
     )
     @PostMapping("")
-    public ResponseEntity<SendFriendResponseDTO> sendFriendRequest(
+    public ResponseEntity<Response<SendFriendResponseDTO>> sendFriendRequest(
             @RequestBody SendFriendRequestDTO request,
             @AuthenticationPrincipal String userId)
     {
-        SendFriendResponseDTO response = friendService.sendFriendRequest(userId, request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Response.success(friendService.sendFriendRequest(userId, request)));
     }
 }
