@@ -1,17 +1,10 @@
 springdoc:
   api-docs:
     path: /v3/api-docs
-
   swagger-ui:
     path: /swagger-ui.html
-    url: /v3/api-docs
-    with-credentials: true
-
-    # 🔽 CDN을 사용하지 않고 로컬 리소스만 쓰도록 설정
-    disable-swagger-default-url: true
-    use-root-path: true
     config-url: /v3/api-docs/swagger-config
-
-    # (옵션) UI 정렬 방식
+    url: /v3/api-docs
     operationsSorter: method
     tagsSorter: alpha
+    with-credentials: true

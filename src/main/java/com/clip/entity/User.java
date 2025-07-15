@@ -14,14 +14,23 @@ import java.util.List;
 @Builder
 public class User extends BaseTimeEntity {
     @Id
-    @Column(length = 50)
-    private String userId;  // 유저 ID (로그인용 ID, 이메일 아님)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = true, unique = true)
+    private String userId; // 이메일 또는 자체 아이디
+
+    @Column(nullable = true)
     private String password;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false)
     private String nickName;
+
+    @Column(nullable = false)
+    private String provider; // LOCAL, KAKAO, GOOGLE, NAVER
+
+    @Column(nullable = false, unique = true)
+    private String providerId; // ex) Google sub, Kakao id
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Clip> clips = new ArrayList<>();

@@ -1,14 +1,25 @@
 package com.clip.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.http.ResponseCookie;
 
 @Getter
-@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponseDTO {
-    private String message;
+
+    private ResponseCookie accessCookie;
+    private ResponseCookie refreshCookie;
+    private LoginData loginData;
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class LoginData {
+        private String message;
+        private String nickName;
+        private String provider;
+    }
 }
