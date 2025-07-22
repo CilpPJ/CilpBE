@@ -2,6 +2,8 @@ package com.clip.config.security;
 
 import com.clip.config.security.filter.ExceptionHandlerFilter;
 import com.clip.config.security.filter.JwtAuthenticationFilter;
+import com.clip.config.security.oauth.OAuth2SuccessHandler;
+import com.clip.config.security.service.CustomOAuth2UserService;
 import com.clip.config.security.service.CustomUserDetailsService;
 import com.clip.config.security.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,8 @@ public class SecurityConfig {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -54,9 +58,14 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs",
+                                "/test-oauth.html",
                                 "/h2-console/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/login/oauth2/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated())
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(exceptionHandlerFilter(), JwtAuthenticationFilter.class);

@@ -18,7 +18,7 @@ public class User extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = true, unique = true)
-    private String userId; // 이메일 또는 자체 아이디
+    private String userId; // 자체 회원가입 아이디
 
     @Column(nullable = true)
     private String password;

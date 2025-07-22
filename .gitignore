@@ -18,7 +18,10 @@ bin/
 !**/src/test/**/bin/
 
 ### application.yml ###
-application.yml
+application-dev.yml
+application-dev-oauth.yml
+application-prod.yml
+application-prod-oauth.yml
 
 ### 암호와 비번 생성기 ###
 BcryptGenerator.java
