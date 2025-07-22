@@ -1,5 +1,7 @@
-package com.clip.config.security;
+package com.clip.config.security.service;
 
+import com.clip.config.exception.CustomException;
+import com.clip.config.security.CustomUserDetails;
 import com.clip.entity.User;
 import com.clip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +21,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         // userId 기준으로 DB에서 유저를 찾고, 없으면 예외 발생
-        System.out.println("[UserDetailsService] DB에서 조회 시도: userId = " + userId);
         User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new CustomException("USER_NOT_FOUND" , userId));
 
         return new CustomUserDetails(user); // 우리가 만든 클래스
     }

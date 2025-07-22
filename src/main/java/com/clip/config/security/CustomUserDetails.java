@@ -6,12 +6,14 @@ import com.clip.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 @RequiredArgsConstructor
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails, OAuth2User {
     private final User user;  // 우리가 만든 User 엔티티 감싸기
 
     // 권한 목록 → 지금은 비워도 됨, 나중에 ROLE_USER 추가 가능
@@ -21,17 +23,32 @@ public class CustomUserDetails implements UserDetails {
         return Collections.emptyList();  // or List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
+    // 일반 로그인 관련
     @Override
     public String getPassword() {
-        return user.getPassword();  // 암호화된 비밀번호
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUserId();  // 로그인 식별자 (userId 필드)
+        return user.getUserId();
     }
 
-    public String getNickName() { return user.getNickName(); }
+    public String getNickName() {
+        return user.getNickName();
+    }
+
+    // 소셜 로그인 관련
+    @Override
+    public Map<String, Object> getAttributes() {
+        return Collections.emptyMap(); // or 원하면 user 정보 담기
+    }
+
+    @Override
+    public String getName() {
+        return user.getUserId(); // 유니크한 식별자 (id 또는 providerId)
+    }
+
 
     @Override
     public boolean isAccountNonExpired() {

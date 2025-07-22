@@ -1,12 +1,10 @@
 package com.clip.service;
 
 import com.clip.config.exception.CustomException;
-import com.clip.config.security.CustomUserDetails;
-import com.clip.config.security.CustomUserDetailsService;
+import com.clip.config.security.service.CustomUserDetailsService;
 import com.clip.dto.DuplicationResponseDTO;
 import com.clip.dto.SignUpRequestDTO;
 import com.clip.dto.SignUpResponseDTO;
-import com.clip.dto.UserDTO;
 import com.clip.entity.User;
 import com.clip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +16,11 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     //회원가입
     public SignUpResponseDTO signUp(SignUpRequestDTO request) {
-        if (userRepository.existsById(request.getUserId())){
+        if (userRepository.existsByUserId(request.getUserId())){
             throw new CustomException("DUPLICATION_ID", "아이디가 중복됩니다");
         }
 
@@ -30,6 +28,8 @@ public class UserService {
                 .userId(request.getUserId())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickName(request.getNickName())
+                .provider("LOCAL")
+                .providerId(request.getUserId())
                 .build();
 
         userRepository.save(user);
@@ -57,18 +57,6 @@ public class UserService {
         }
 
         return new DuplicationResponseDTO(isDuplication, "사용 가능한 닉네임입니다.");
-    }
-
-    // 유저정보 가져오기
-    public UserDTO getUser(String userId) {
-        if (userId == null) {
-            return new UserDTO(false, null, null);
-        }
-
-        CustomUserDetails userDetails =
-                (CustomUserDetails) customUserDetailsService.loadUserByUsername(userId);
-
-        return new UserDTO(true, userDetails.getUsername(), userDetails.getNickName());
     }
 
 }

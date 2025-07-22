@@ -1,5 +1,6 @@
-package com.clip.config.security;
+package com.clip.config.security.service;
 
+import com.clip.config.exception.CustomException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -38,10 +39,7 @@ public class JwtService {
                 .compact();
     }
 
-    // 토큰에서 userId 꺼내기
-    public String extractUserId(String token) {
-        return extractAllClaims(token).getSubject();
-    }
+    ////////////////////////////////////////////////////////////
 
     // 토큰 유효성 검증
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -49,10 +47,37 @@ public class JwtService {
         return (userId.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    // 리프레시 토큰 유효성 검증 => 재발급용
+    public boolean isRefreshTokenValid(String token) {
+        try {
+            Claims claims = extractAllClaims(token); // 시크릿 키로 파싱
+            Date expiration = claims.getExpiration();
+            return !expiration.before(new Date()); // 만료 안 됐으면 true
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String extractUserId(String token) {
+        try {
+            return extractAllClaims(token).getSubject();
+        } catch (MalformedJwtException e) {
+            throw new CustomException("JWT_001", "잘못된 JWT 형식입니다.");
+        } catch (ExpiredJwtException e) {
+            throw new CustomException("JWT_002", "JWT가 만료되었습니다.");
+        } catch (SignatureException e) {
+            throw new CustomException("JWT_003", "JWT 서명이 유효하지 않습니다.");
+        } catch (Exception e) {
+            throw new CustomException("JWT_999", "JWT 파싱 중 알 수 없는 오류가 발생했습니다.");
+        }
+    }
+
+
     private boolean isTokenExpired(String token) {
         return extractAllClaims(token).getExpiration().before(new Date());
     }
 
+    // JWT에서 서명키로 접속해서 Claims(내용 전체)를 추출
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignKey())

@@ -1,5 +1,6 @@
 package com.clip.controller;
 
+import com.clip.config.security.CustomUserDetails;
 import com.clip.dto.clip.*;
 import com.clip.dto.common.Response;
 import com.clip.service.ClipService;
@@ -28,10 +29,10 @@ public class ClipController {
     )
     @PostMapping("")
     public ResponseEntity<Response<CreateClipResponseDTO>> createClip(
-            @AuthenticationPrincipal String userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody CreateClipRequestDTO request)
     {
-        return ResponseEntity.ok(Response.success(clipService.createClip(userId, request)));
+        return ResponseEntity.ok(Response.success(clipService.createClip(userDetails.getUsername(), request)));
     }
 
     @Operation(
@@ -42,9 +43,9 @@ public class ClipController {
     public ResponseEntity<Response<Slice<GetClipResponseDTO>>> getAllClips(
             @RequestParam(required = false) String lastCreatedAt, // 커서 값
             @RequestParam(defaultValue = "10") int size,
-            @AuthenticationPrincipal String userId)
+            @AuthenticationPrincipal CustomUserDetails userDetails)
     {
-        return ResponseEntity.ok(Response.success(clipService.getAllClips(userId, lastCreatedAt, size)));
+        return ResponseEntity.ok(Response.success(clipService.getAllClips(userDetails.getUsername(), lastCreatedAt, size)));
     }
 
     @Operation(
@@ -54,9 +55,9 @@ public class ClipController {
     @GetMapping("/{clipId}")
     public ResponseEntity<Response<GetDetailClipResponseDTO>> getClip(
             @PathVariable Long clipId,
-            @AuthenticationPrincipal String userId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
-        return ResponseEntity.ok(Response.success(clipService.getDetailClip(userId, clipId)));
+        return ResponseEntity.ok(Response.success(clipService.getDetailClip(userDetails.getUsername(), clipId)));
     }
 
     @Operation(
@@ -67,9 +68,9 @@ public class ClipController {
     public ResponseEntity<Response<UpdateClipResponseDTO>> updateClip(
             @PathVariable Long clipId,
             @RequestBody UpdateClipRequestDTO request,
-            @AuthenticationPrincipal String userId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
-        return ResponseEntity.ok(Response.success(clipService.updateDetailClip(userId, clipId, request)));
+        return ResponseEntity.ok(Response.success(clipService.updateDetailClip(userDetails.getUsername(), clipId, request)));
     }
 
     @Operation(
@@ -79,9 +80,9 @@ public class ClipController {
     @DeleteMapping("/{clipId}")
     public ResponseEntity<Response<DeleteClipResponseDTO>> deleteClip(
             @PathVariable Long clipId,
-            @AuthenticationPrincipal String userId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ){
-        return ResponseEntity.ok(Response.success(clipService.deleteClip(userId, clipId)));
+        return ResponseEntity.ok(Response.success(clipService.deleteClip(userDetails.getUsername(), clipId)));
     }
 
 }

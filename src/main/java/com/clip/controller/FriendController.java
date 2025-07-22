@@ -1,5 +1,6 @@
 package com.clip.controller;
 
+import com.clip.config.security.CustomUserDetails;
 import com.clip.dto.common.Response;
 import com.clip.dto.friend.SendFriendRequestDTO;
 import com.clip.dto.friend.SendFriendResponseDTO;
@@ -26,8 +27,8 @@ public class FriendController {
     @PostMapping("")
     public ResponseEntity<Response<SendFriendResponseDTO>> sendFriendRequest(
             @RequestBody SendFriendRequestDTO request,
-            @AuthenticationPrincipal String userId)
+            @AuthenticationPrincipal CustomUserDetails userDetails)
     {
-        return ResponseEntity.ok(Response.success(friendService.sendFriendRequest(userId, request)));
+        return ResponseEntity.ok(Response.success(friendService.sendFriendRequest(userDetails.getUsername(), request)));
     }
 }
