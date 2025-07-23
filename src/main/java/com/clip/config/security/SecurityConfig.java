@@ -54,8 +54,11 @@ public class SecurityConfig {
                 )
                 //경로별 인가 작업
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/swagger-ui.html",
+                        .requestMatchers("/swagger",
+                                "/swagger-ui.html",
                                 "/swagger-ui/**",
+                                "/api-docs/**",
+                                "/api-docs",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs",
                                 "/test-oauth.html",
@@ -113,7 +116,6 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:8080",
-                "http://clipin.store",
                 "http://www.clipin.store",
                 "http://clip-fe.s3-website.ap-northeast-2.amazonaws.com"
 
