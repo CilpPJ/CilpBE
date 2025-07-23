@@ -37,7 +37,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addHeader("Set-Cookie", refreshCookie.toString());
 
         // 리다이렉트 → 프론트 메인 페이지 주소
-        response.sendRedirect("http://clip-fe.s3-website.ap-northeast-2.amazonaws.com");
+        response.sendRedirect("http://www.clipin.store");
     }
 
     private ResponseCookie createAccessTokenCookie(String accessToken) {
