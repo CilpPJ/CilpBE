@@ -24,7 +24,7 @@ public class User extends BaseTimeEntity {
     private String password;
 
     @Column(nullable = false)
-    private String nickName;
+    private String nickname;
 
     @Column(nullable = false)
     private String provider; // LOCAL, KAKAO, GOOGLE, NAVER

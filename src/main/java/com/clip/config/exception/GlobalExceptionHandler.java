@@ -19,7 +19,15 @@ public class GlobalExceptionHandler {
                 .body(Response.fail(ex.getErrorCode(), ex.getMessage()));
     }
 
-    // 널포인터 등 서버 내부 에러 같은 코드상 실수
+    // 중복 예외 전용 핸들러
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<Response<Void>> handleDuplicateException(DuplicateException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(Response.conflict(ex.getErrorCode(), ex.getMessage()));
+    }
+
+    // 널 오류 같은 서버 내부 에러 같은 코드상 실수
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<Response<Void>> handleNPE(NullPointerException ex) {
         return ResponseEntity
@@ -27,7 +35,7 @@ public class GlobalExceptionHandler {
                 .body(Response.error("NullPointerException: " + ex.getMessage()));
     }
 
-    // 기타 모든 예외 처리
+    // 기타 못잡은 다른 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Response<Void>> handleAllExceptions(Exception ex) {
         return ResponseEntity

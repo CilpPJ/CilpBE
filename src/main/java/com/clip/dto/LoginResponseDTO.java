@@ -19,7 +19,7 @@ public class LoginResponseDTO {
     @NoArgsConstructor
     public static class LoginData {
         private String message;
-        private String nickName;
+        private String nickname;
         private String provider;
     }
 }

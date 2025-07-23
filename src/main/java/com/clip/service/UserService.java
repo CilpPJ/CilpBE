@@ -1,6 +1,7 @@
 package com.clip.service;
 
 import com.clip.config.exception.CustomException;
+import com.clip.config.exception.DuplicateException;
 import com.clip.config.security.service.CustomUserDetailsService;
 import com.clip.dto.DuplicationResponseDTO;
 import com.clip.dto.SignUpRequestDTO;
@@ -27,7 +28,7 @@ public class UserService {
         User user = User.builder()
                 .userId(request.getUserId())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .nickName(request.getNickName())
+                .nickname(request.getNickname())
                 .provider("LOCAL")
                 .providerId(request.getUserId())
                 .build();
@@ -43,17 +44,17 @@ public class UserService {
        boolean isDuplication = userRepository.existsByUserId(userId);
 
        if (isDuplication){
-           throw new CustomException("DUPLICATION_ID", "아이디가 중복됩니다");
+           throw new DuplicateException("DUPLICATION_ID", "아이디가 중복됩니다");
        }
 
        return new DuplicationResponseDTO(isDuplication, "사용 가능한 값입니다.");
     }
 
-    public DuplicationResponseDTO checkNickName(String nickName) {
-        boolean isDuplication = userRepository.existsByNickName(nickName);
+    public DuplicationResponseDTO checkNickName(String nickname) {
+        boolean isDuplication = userRepository.existsByNickname(nickname);
 
         if (isDuplication){
-            throw new CustomException("DUPLICATION_NICKNAME", "닉네임이 중복됩니다");
+            throw new DuplicateException("DUPLICATION_NICKNAME", "닉네임이 중복됩니다");
         }
 
         return new DuplicationResponseDTO(isDuplication, "사용 가능한 닉네임입니다.");

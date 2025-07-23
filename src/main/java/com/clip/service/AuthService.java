@@ -78,7 +78,7 @@ public class AuthService {
                 .refreshCookie(refreshCookie)
                 .loginData(LoginResponseDTO.LoginData.builder()
                         .message("로그인 성공")
-                        .nickName(user.getNickName())
+                        .nickname(user.getNickname())
                         .provider(user.getProvider())
                         .build())
                 .build();

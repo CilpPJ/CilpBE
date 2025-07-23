@@ -23,7 +23,7 @@ public class FriendService {
     @Transactional
     public SendFriendResponseDTO sendFriendRequest(String fromId, SendFriendRequestDTO request){
         // 닉네임으로 상대 유저 조회
-        User toUser = userRepository.findByNickName(request.getNickName())
+        User toUser = userRepository.findByNickname(request.getNickname())
                 .orElseThrow(() -> new CustomException("USER_NOT_FOUND", "해당 유저가 존재하지 않습니다"));
 
         // 본인에게 친구 요청 방지

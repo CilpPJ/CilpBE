@@ -37,6 +37,10 @@ public class Response<T> {
         return new Response<>("FAIL", errorCode, errorMessage);
     }
 
+    public static <T> Response<T> conflict(String errorCode, String errorMessage) {
+        return new Response<>("CONFLICT", errorCode, errorMessage);
+    }
+
     public static <T> Response<T> error(String errorMessage) {
         return new Response<>("ERROR", "INTERNAL_ERROR", errorMessage);
     }
