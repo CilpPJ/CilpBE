@@ -13,5 +13,5 @@ public class SignUpRequestDTO {
     @Schema(description = "비밀번호", example = "testpass")
     private String password;
     @Schema(description = "닉네임", example = "tester")
-    private String nickName;
+    private String nickname;
 }

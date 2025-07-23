@@ -37,7 +37,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .userId(userId)
                     .provider(attributes.getProvider())
                     .providerId(attributes.getProviderId())
-                    .nickName(attributes.getNickName())
+                    .nickname(attributes.getNickname())
                     .password("")  // 소셜 로그인은 비번 없음
                     .build());
         });

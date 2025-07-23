@@ -56,9 +56,9 @@ public class AuthController {
             summary = "닉네임 중복확인",
             description = "닉네임 중복확인을 합니다"
     )
-    @PostMapping("/check/duplicateNickName/{nickName}")
-    public ResponseEntity<Response<DuplicationResponseDTO>> nickNameDuplicationCheck(@PathVariable String nickName){
-        return ResponseEntity.ok(Response.success(userService.checkNickName(nickName)));
+    @PostMapping("/check/duplicateNickname/{nickname}")
+    public ResponseEntity<Response<DuplicationResponseDTO>> nicknameDuplicationCheck(@PathVariable String nickname){
+        return ResponseEntity.ok(Response.success(userService.checkNickName(nickname)));
     }
 
     @Operation(

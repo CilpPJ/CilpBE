@@ -14,7 +14,7 @@ public class OAuthAttributes {
     private String provider;
     private String providerId;
     private String email;
-    private String nickName;
+    private String nickname;
     private Map<String, Object> attributes; // 원본 응답 전체 저장
 
     public static OAuthAttributes of(String provider, Map<String, Object> attributes){
@@ -32,7 +32,7 @@ public class OAuthAttributes {
                 .provider(provider)
                 .providerId((String) attributes.get("sub"))         // 구글 고유 ID
                 .email((String) attributes.get("email"))            // 이메일
-                .nickName((String) attributes.get("name"))          // 사용자 이름
+                .nickname((String) attributes.get("name"))          // 사용자 이름
                 .attributes(attributes)
                 .build();
     }
@@ -45,7 +45,7 @@ public class OAuthAttributes {
                 .provider(provider)
                 .providerId(attributes.get("id").toString())                    // 카카오 고유 ID
                 .email((String) kakaoAccount.get("email"))                     // 이메일
-                .nickName((String) profile.get("nickname"))                    // 닉네임
+                .nickname((String) profile.get("nickname"))                    // 닉네임
                 .attributes(attributes)
                 .build();
     }

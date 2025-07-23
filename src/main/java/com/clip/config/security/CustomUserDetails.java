@@ -34,8 +34,8 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         return user.getUserId();
     }
 
-    public String getNickName() {
-        return user.getNickName();
+    public String getnickname() {
+        return user.getNickname();
     }
 
     // 소셜 로그인 관련
