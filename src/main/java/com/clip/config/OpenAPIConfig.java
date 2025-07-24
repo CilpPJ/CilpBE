@@ -2,6 +2,7 @@ package com.clip.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -33,7 +34,10 @@ import org.springframework.context.annotation.Configuration;
         이 조합을 통해, <b>Swagger UI에서도 쿠키 기반 인증이 완전히 지원</b>됩니다.<br>
         <i>(도메인과 포트가 일치해야 하며, HTTPS 환경에서는 Secure 설정도 필요합니다)</i>
         """
-        )
+        ),
+        servers = {
+        @Server(url = "https://www.clipin.store", description = "Production Server")
+}
 )
 public class OpenAPIConfig {
 
