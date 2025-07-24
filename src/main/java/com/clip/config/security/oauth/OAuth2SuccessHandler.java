@@ -30,8 +30,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtService.generateAccessToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-        ResponseCookie accessCookie = createAccessTokenCookie(accessToken);
-        ResponseCookie refreshCookie = createRefreshTokenCookie(refreshToken);
+        boolean isDev = isDevEnvironment(request);
+
+        ResponseCookie accessCookie = createAccessTokenCookie(accessToken, isDev);
+        ResponseCookie refreshCookie = createRefreshTokenCookie(refreshToken, isDev);
 
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
@@ -49,22 +51,29 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.sendRedirect(redirectUrl);
     }
 
-    private ResponseCookie createAccessTokenCookie(String accessToken) {
+    private ResponseCookie createAccessTokenCookie(String accessToken, boolean isDev) {
         return ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
-                .secure(false)
+                .secure(!isDev == true) // 운영환경이면 true, 개발이면 false
+                .sameSite(isDev ? "Lax" : "None")
                 .path("/")
                 .maxAge(60 * 15)
                 .build();
     }
 
-    private ResponseCookie createRefreshTokenCookie(String refreshToken) {
+    private ResponseCookie createRefreshTokenCookie(String refreshToken, boolean isDev) {
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(false)
+                .secure(!isDev == true)
+                .sameSite(isDev ? "Lax" : "None")
                 .path("/")
                 .maxAge(60 * 60 * 24 * 7)
                 .build();
+    }
+
+    private boolean isDevEnvironment(HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        return origin != null && origin.contains("localhost");
     }
 }
 
