@@ -36,8 +36,17 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
 
-        // 리다이렉트 → 프론트 메인 페이지 주소
-        response.sendRedirect("http://www.clipin.store");
+        // 리다이렉트 분기
+        String redirectUrl;
+        String origin = request.getHeader("Origin"); // or referer 써도 됨
+
+        if (origin != null && origin.contains("localhost")) {
+            redirectUrl = "http://localhost:5173";
+        } else {
+            redirectUrl = "https://www.clipin.store";
+        }
+
+        response.sendRedirect(redirectUrl);
     }
 
     private ResponseCookie createAccessTokenCookie(String accessToken) {
