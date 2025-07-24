@@ -114,6 +114,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
+                "https://localhost:5173",
                 "http://localhost:5173",
                 "https://www.clipin.store"
         ));
