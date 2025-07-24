@@ -6,7 +6,6 @@ import com.clip.config.security.service.JwtService;
 import com.clip.dto.LoginRequestDTO;
 import com.clip.dto.LoginResponseDTO;
 import com.clip.entity.User;
-import com.clip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class AuthService {
     private final JwtService jwtService;
 
     @Transactional
-    public LoginResponseDTO login(LoginRequestDTO request) {
+    public LoginResponseDTO login(LoginRequestDTO request, HttpServletRequest httpRequest) {
 
         // 인증
         authenticateUser(request);
@@ -35,10 +36,11 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-        ResponseCookie accessCookie = createAccessTokenCookie(accessToken);
-        ResponseCookie refreshCookie = createRefreshTokenCookie(refreshToken);
+        boolean isDev = isDevEnvironment(httpRequest);
 
-        // 응답 생성
+        ResponseCookie accessCookie = createAccessTokenCookie(accessToken, isDev);
+        ResponseCookie refreshCookie = createRefreshTokenCookie(refreshToken, isDev);
+
         return buildLoginResponse(user, accessCookie, refreshCookie);
     }
 
@@ -54,19 +56,26 @@ public class AuthService {
         return userDetailsService.loadUserByUsername(request.getUserId());
     }
 
-    private ResponseCookie createAccessTokenCookie(String accessToken) {
+    private boolean isDevEnvironment(HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        return origin != null && origin.contains("localhost");
+    }
+
+    private ResponseCookie createAccessTokenCookie(String accessToken, boolean isDev) {
         return ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
-                .secure(false)
+                .secure(!isDev == true) // 운영환경이면 true, 개발이면 false
+                .sameSite(isDev ? "Lax" : "None")
                 .path("/")
                 .maxAge(60 * 15)
                 .build();
     }
 
-    private ResponseCookie createRefreshTokenCookie(String refreshToken) {
+    private ResponseCookie createRefreshTokenCookie(String refreshToken, boolean isDev) {
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(false)
+                .secure(!isDev == true)
+                .sameSite(isDev ? "Lax" : "None")
                 .path("/")
                 .maxAge(60 * 60 * 24 * 7)
                 .build();
@@ -83,5 +92,4 @@ public class AuthService {
                         .build())
                 .build();
     }
-
 }

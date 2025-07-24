@@ -76,14 +76,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     userId = jwtService.extractUserId(refreshToken);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
 
+                    boolean isDev = isDevEnvironment(request);
                     // accessToken 재발급
                     String newAccessToken = jwtService.generateAccessToken(userDetails);
                     Cookie newCookie = new Cookie("accessToken", newAccessToken);
                     newCookie.setHttpOnly(true);
-                    newCookie.setSecure(true);
+                    newCookie.setSecure(!isDev); // 운영이면 true, 개발이면 false
                     newCookie.setPath("/");
-                    newCookie.setMaxAge(60 * 15); // 15분
+                    newCookie.setMaxAge(60 * 15);
+
+                    // SameSite 설정은 Header로 직접 추가해야 함 (Cookie API엔 없음)
                     response.addCookie(newCookie);
+                    response.setHeader("Set-Cookie",
+                            String.format("accessToken=%s; Max-Age=%d; Path=/; HttpOnly; %s; SameSite=%s",
+                                    newAccessToken,
+                                    60 * 15,
+                                    !isDev ? "Secure" : "",
+                                    isDev ? "Lax" : "None"
+                            )
+                    );
 
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
@@ -122,5 +133,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .map(Cookie::getValue)
                 .orElse(null);
     }
+
+    // 환경 체크 (Origin이 localhost인지)
+    private boolean isDevEnvironment(HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        return origin != null && origin.contains("localhost");
+    }
+
 }
 

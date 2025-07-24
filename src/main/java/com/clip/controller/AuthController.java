@@ -6,6 +6,7 @@ import com.clip.dto.common.Response;
 import com.clip.service.AuthService;
 import com.clip.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,9 +25,10 @@ public class AuthController {
     )
     @PostMapping("/login")
     public ResponseEntity<Response<LoginResponseDTO.LoginData>> login(
-            @RequestBody LoginRequestDTO request
+            @RequestBody LoginRequestDTO request,
+            HttpServletRequest httpRequest
     ) {
-        LoginResponseDTO response = authService.login(request);
+        LoginResponseDTO response = authService.login(request, httpRequest);
 
         return ResponseEntity.ok()
                 .header("Set-Cookie", response.getAccessCookie().toString())
@@ -44,7 +46,7 @@ public class AuthController {
     )
     @GetMapping("/kakao-url")
     public ResponseEntity<String> getKakaoLoginUrl() {
-        String redirectUrl = "http://www.clipin.store/oauth2/authorization/kakao";
+        String redirectUrl = "https://www.clipin.store/oauth2/authorization/kakao";
         return ResponseEntity.ok(redirectUrl);
     }
 
