@@ -116,9 +116,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:8080",
-                "http://www.clipin.store",
-                "http://clip-fe.s3-website.ap-northeast-2.amazonaws.com"
-
+                "http://www.clipin.store"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
