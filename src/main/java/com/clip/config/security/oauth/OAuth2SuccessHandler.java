@@ -52,8 +52,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         return ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
-                .secure(!isDev)
-                .sameSite(isDev ? "Lax" : "None")
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .domain(domain)
                 .maxAge(60 * 15)
@@ -66,8 +66,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(!isDev)
-                .sameSite(isDev ? "Lax" : "None")
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .domain(domain)
                 .maxAge(60 * 60 * 24 * 7)
