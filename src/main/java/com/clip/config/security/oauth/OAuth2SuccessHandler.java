@@ -48,35 +48,33 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private ResponseCookie createAccessTokenCookie(String accessToken, HttpServletRequest request) {
         boolean isDev = isDevEnvironment(request);
-        String domain = request.getServerName(); // local.clipin.store or www.clipin.store
 
         return ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
                 .secure(!isDev)
                 .sameSite(isDev ? "Lax" : "None")
                 .path("/")
-                .domain(domain) // 요청 도메인 기준으로 설정
+                .domain("clipin.store")
                 .maxAge(60 * 15)
                 .build();
     }
 
     private ResponseCookie createRefreshTokenCookie(String refreshToken, HttpServletRequest request) {
         boolean isDev = isDevEnvironment(request);
-        String domain = request.getServerName();
 
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(!isDev)
                 .sameSite(isDev ? "Lax" : "None")
                 .path("/")
-                .domain(domain)
+                .domain("clipin.store")
                 .maxAge(60 * 60 * 24 * 7)
                 .build();
     }
 
     private boolean isDevEnvironment(HttpServletRequest request) {
         String host = request.getServerName();
-        return host.contains("localhost") || host.contains("local");
+        return host.contains("localhost") || host.contains("local.");
     }
 }
 
