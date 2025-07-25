@@ -61,26 +61,28 @@ public class AuthService {
 
     private ResponseCookie createAccessTokenCookie(String accessToken, HttpServletRequest request) {
         boolean isDev = isDevEnvironment(request);
+        String domain = isDev ? "local.clipin.store" : "clipin.store";
 
         return ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
                 .secure(!isDev)
                 .sameSite(isDev ? "Lax" : "None")
                 .path("/")
-                .domain("clipin.store") // 요청 도메인 기준으로 설정
+                .domain(domain) // 요청 도메인 기준으로 설정
                 .maxAge(60 * 15)
                 .build();
     }
 
     private ResponseCookie createRefreshTokenCookie(String refreshToken, HttpServletRequest request) {
         boolean isDev = isDevEnvironment(request);
+        String domain = isDev ? "local.clipin.store" : "clipin.store";
 
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(!isDev)
                 .sameSite(isDev ? "Lax" : "None")
                 .path("/")
-                .domain("clipin.store")
+                .domain(domain)
                 .maxAge(60 * 60 * 24 * 7)
                 .build();
     }

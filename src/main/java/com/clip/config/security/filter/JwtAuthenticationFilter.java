@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
@@ -77,24 +79,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
 
                     boolean isDev = isDevEnvironment(request);
-                    // accessToken 재발급
                     String newAccessToken = jwtService.generateAccessToken(userDetails);
-                    Cookie newCookie = new Cookie("accessToken", newAccessToken);
-                    newCookie.setHttpOnly(true);
-                    newCookie.setSecure(!isDev); // 운영이면 true, 개발이면 false
-                    newCookie.setPath("/");
-                    newCookie.setMaxAge(60 * 15);
 
-                    // SameSite 설정은 Header로 직접 추가해야 함 (Cookie API엔 없음)
-                    response.addCookie(newCookie);
-                    response.setHeader("Set-Cookie",
-                            String.format("accessToken=%s; Max-Age=%d; Path=/; HttpOnly; %s; SameSite=%s",
-                                    newAccessToken,
-                                    60 * 15,
-                                    !isDev ? "Secure" : "",
-                                    isDev ? "Lax" : "None"
-                            )
-                    );
+                    // 통일된 쿠키 설정 로직 호출
+                    addAccessTokenCookie(response, newAccessToken, isDev);
 
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
@@ -134,10 +122,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .orElse(null);
     }
 
-    // 환경 체크 (Origin이 localhost인지)
     private boolean isDevEnvironment(HttpServletRequest request) {
-        String origin = request.getHeader("Origin");
-        return origin != null && origin.contains("localhost");
+        String host = request.getServerName();
+        return host.contains("localhost") || host.contains("local.");
+    }
+
+    private void addAccessTokenCookie(HttpServletResponse response, String token, boolean isDev) {
+        String domain = isDev ? "local.clipin.store" : "clipin.store";
+
+        ResponseCookie cookie = ResponseCookie.from("accessToken", token)
+                .httpOnly(true)
+                .secure(!isDev)
+                .domain(domain)
+                .sameSite(isDev ? "Lax" : "None")
+                .path("/")
+                .maxAge(Duration.ofMinutes(15))
+                .build();
+
+        response.setHeader("Set-Cookie", cookie.toString());
     }
 
 }
