@@ -30,13 +30,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtService.generateAccessToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-        boolean isDev = isDevEnvironment(request);
-
-        ResponseCookie accessCookie = createAccessTokenCookie(accessToken, isDev);
-        ResponseCookie refreshCookie = createRefreshTokenCookie(refreshToken, isDev);
+        ResponseCookie accessCookie = createAccessTokenCookie(accessToken, request);
+        ResponseCookie refreshCookie = createRefreshTokenCookie(refreshToken, request);
 
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
+
 
         // 리다이렉트 분기
         String redirectUrl = (String) request.getSession().getAttribute("redirect_uri");
@@ -47,29 +46,37 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.sendRedirect(redirectUrl);
     }
 
-    private ResponseCookie createAccessTokenCookie(String accessToken, boolean isDev) {
+    private ResponseCookie createAccessTokenCookie(String accessToken, HttpServletRequest request) {
+        boolean isDev = isDevEnvironment(request);
+        String domain = request.getServerName(); // local.clipin.store or www.clipin.store
+
         return ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
-                .secure(!isDev == true) // 운영환경이면 true, 개발이면 false
+                .secure(!isDev)
                 .sameSite(isDev ? "Lax" : "None")
                 .path("/")
+                .domain(domain) // 요청 도메인 기준으로 설정
                 .maxAge(60 * 15)
                 .build();
     }
 
-    private ResponseCookie createRefreshTokenCookie(String refreshToken, boolean isDev) {
+    private ResponseCookie createRefreshTokenCookie(String refreshToken, HttpServletRequest request) {
+        boolean isDev = isDevEnvironment(request);
+        String domain = request.getServerName();
+
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(!isDev == true)
+                .secure(!isDev)
                 .sameSite(isDev ? "Lax" : "None")
                 .path("/")
+                .domain(domain)
                 .maxAge(60 * 60 * 24 * 7)
                 .build();
     }
 
     private boolean isDevEnvironment(HttpServletRequest request) {
-        String origin = request.getHeader("Origin");
-        return origin != null && origin.contains("localhost");
+        String host = request.getServerName();
+        return host.contains("localhost") || host.contains("local");
     }
 }
 
