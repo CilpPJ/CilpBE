@@ -42,7 +42,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .build());
         });
 
-        // 6. 우리가 만든 CustomUserDetails로 감싸기
+        // 우리가 만든 CustomUserDetails로 감싸기
         return new CustomUserDetails(user);
     }
 }

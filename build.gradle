@@ -23,6 +23,15 @@ repositories {
     mavenCentral()
 }
 
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from('src/main/resources') {
+        include 'application-prod.yml'
+        include 'application-prod-oauth.yml'
+    }
+    into "$buildDir/resources/main"
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'

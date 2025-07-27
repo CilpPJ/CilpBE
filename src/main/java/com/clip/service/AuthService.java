@@ -36,7 +36,7 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-        ResponseCookie accessCookie = createAccessTokenCookie(accessToken, httpRequest);
+        ResponseCookie accessCookie = createAccessTokenCookie(accessToken);
         ResponseCookie refreshCookie = createRefreshTokenCookie(refreshToken, httpRequest);
 
         return buildLoginResponse(user, accessCookie, refreshCookie);
@@ -54,35 +54,23 @@ public class AuthService {
         return userDetailsService.loadUserByUsername(request.getUserId());
     }
 
-    private boolean isDevEnvironment(HttpServletRequest request) {
-        String host = request.getServerName();
-        return host.contains("localhost") || host.contains("local");
-    }
-
-    private ResponseCookie createAccessTokenCookie(String accessToken, HttpServletRequest request) {
-        boolean isDev = isDevEnvironment(request);
-        String domain = isDev ? "local.clipin.store" : "clipin.store";
+    private ResponseCookie createAccessTokenCookie(String accessToken) {
 
         return ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
-                .secure(!isDev)
-                .sameSite(isDev ? "Lax" : "None")
+                .secure(false)
+                .sameSite("Lax")
                 .path("/")
-                .domain(domain) // 요청 도메인 기준으로 설정
                 .maxAge(60 * 15)
                 .build();
     }
 
     private ResponseCookie createRefreshTokenCookie(String refreshToken, HttpServletRequest request) {
-        boolean isDev = isDevEnvironment(request);
-        String domain = isDev ? "local.clipin.store" : "clipin.store";
-
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(!isDev)
-                .sameSite(isDev ? "Lax" : "None")
+                .secure(false)
+                .sameSite("Lax")
                 .path("/")
-                .domain(domain)
                 .maxAge(60 * 60 * 24 * 7)
                 .build();
     }

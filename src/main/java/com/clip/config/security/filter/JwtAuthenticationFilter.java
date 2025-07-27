@@ -52,6 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String accessToken = extractTokenFromCookies(request);
             String userId = jwtService.extractUserId(accessToken);
+            System.out.println("[필터에서 아이디 추출 성공]userId: " + userId);
 
             if (userId != null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
@@ -78,11 +79,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     userId = jwtService.extractUserId(refreshToken);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
 
-                    boolean isDev = isDevEnvironment(request);
                     String newAccessToken = jwtService.generateAccessToken(userDetails);
 
                     // 통일된 쿠키 설정 로직 호출
-                    addAccessTokenCookie(response, newAccessToken, isDev);
+                    addAccessTokenCookie(response, newAccessToken);
 
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
@@ -100,9 +100,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // 쿠키에서 accessToken 추출하는 유틸
     private String extractTokenFromCookies(HttpServletRequest request) {
-        if (request.getCookies() == null) return null;
+        if (request.getCookies() == null) {
+            System.out.println("[extractTokenFromCookies] No cookies found in request.");
+            return null;
+        }
 
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> "accessToken".equals(cookie.getName()))
@@ -111,9 +113,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .orElse(null);
     }
 
-    // 쿠키에서 refreshToken 추출하는 유틸
     private String extractRefreshTokenFromCookies(HttpServletRequest request) {
-        if (request.getCookies() == null) return null;
+        if (request.getCookies() == null) {
+            System.out.println("[extractRefreshTokenFromCookies] No cookies found in request.");
+            return null;
+        }
 
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> "refreshToken".equals(cookie.getName()))
@@ -122,19 +126,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .orElse(null);
     }
 
-    private boolean isDevEnvironment(HttpServletRequest request) {
-        String host = request.getServerName();
-        return host.contains("localhost") || host.contains("local.");
-    }
-
-    private void addAccessTokenCookie(HttpServletResponse response, String token, boolean isDev) {
-        String domain = isDev ? "local.clipin.store" : "clipin.store";
-
+    private void addAccessTokenCookie(HttpServletResponse response, String token) {
         ResponseCookie cookie = ResponseCookie.from("accessToken", token)
                 .httpOnly(true)
-                .secure(!isDev)
-                .domain(domain)
-                .sameSite(isDev ? "Lax" : "None")
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .maxAge(Duration.ofMinutes(15))
                 .build();
