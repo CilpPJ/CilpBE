@@ -2,16 +2,13 @@ package com.clip.config.security;
 
 import com.clip.config.security.filter.ExceptionHandlerFilter;
 import com.clip.config.security.filter.JwtAuthenticationFilter;
-import com.clip.config.security.oauth.CustomAuthorizationRequestResolver;
 import com.clip.config.security.oauth.OAuth2SuccessHandler;
 import com.clip.config.security.service.CustomOAuth2UserService;
 import com.clip.config.security.service.CustomUserDetailsService;
 import com.clip.config.security.service.JwtService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -40,7 +37,6 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -68,9 +64,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**", "/login/oauth2/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(auth -> auth
-                                .authorizationRequestResolver(customAuthorizationRequestResolver)
-                        )
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler))
@@ -121,8 +114,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "https://localhost:5173",
                 "http://localhost:5173",
-                "https://local.clipin.store:5173",
-                "http://local.clipin.store:5173",
+                "http://localhost:8080",
                 "https://www.clipin.store"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

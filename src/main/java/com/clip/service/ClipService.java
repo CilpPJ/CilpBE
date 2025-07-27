@@ -44,9 +44,13 @@ public class ClipService {
 
     // 모든 클립 무한스크롤 기반으로 가져오기
     public Slice<GetClipResponseDTO> getAllClips(String userId, String lastCreatedAt, int size){
-        LocalDateTime cursor = lastCreatedAt != null
-                ? LocalDateTime.parse(lastCreatedAt)
-                : LocalDateTime.now(); // 첫 페이지면 지금 기준
+        LocalDateTime cursor;
+
+        if (lastCreatedAt != null && !lastCreatedAt.isBlank()) {
+            cursor = LocalDateTime.parse(lastCreatedAt);
+        } else {
+            cursor = LocalDateTime.now(); // 첫 페이지면 현재 시간 기준
+        }
 
         return clipRepository.findByUserIdAndCreatedAtBefore(userId, cursor,
                 PageRequest.of(0, size, Sort.by("createdAt").descending()));

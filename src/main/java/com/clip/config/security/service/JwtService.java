@@ -67,8 +67,6 @@ public class JwtService {
             throw new CustomException("JWT_002", "JWT가 만료되었습니다.");
         } catch (SignatureException e) {
             throw new CustomException("JWT_003", "JWT 서명이 유효하지 않습니다.");
-        } catch (Exception e) {
-            throw new CustomException("JWT_999", "JWT 파싱 중 알 수 없는 오류가 발생했습니다.");
         }
     }
 

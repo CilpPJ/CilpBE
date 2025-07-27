@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
         """
         ),
         servers = {
-        @Server(url = "https://www.clipin.store", description = "Production Server")
+//        @Server(url = "https://www.clipin.store", description = "Production Server")
 }
 )
 public class OpenAPIConfig {

@@ -37,20 +37,6 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "카카오 로그인 URL 반환",
-            description = """
-            프론트엔드에서 로그인 버튼 클릭 시, 이 API를 호출해 로그인 시작 URL을 받아갑니다.
-            응답으로 받은 URL로 브라우저 이동하면 소셜 로그인이 시작됩니다.
-            리다이렉트 URI는 백엔드에서 관리하므로 프론트는 신경 쓸 필요 없습니다.
-        """
-    )
-    @GetMapping("/kakao-url")
-    public ResponseEntity<String> getKakaoLoginUrl() {
-        String redirectUrl = "https://www.clipin.store/oauth2/authorization/kakao";
-        return ResponseEntity.ok(redirectUrl);
-    }
-
-    @Operation(
             summary = "회원가입",
             description = "아이디와 비밀번호, 닉네임을 입력하여 회원가입합니다"
     )
@@ -87,4 +73,6 @@ public class AuthController {
     ){
         return ResponseEntity.ok(Response.success(userDetails));
     }
+
+
 }
