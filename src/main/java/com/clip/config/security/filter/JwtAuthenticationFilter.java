@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,7 +53,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String accessToken = extractTokenFromCookies(request);
             String userId = jwtService.extractUserId(accessToken);
-            System.out.println("[필터에서 아이디 추출 성공]userId: " + userId);
 
             if (userId != null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
@@ -102,8 +102,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractTokenFromCookies(HttpServletRequest request) {
         if (request.getCookies() == null) {
-            System.out.println("[extractTokenFromCookies] No cookies found in request.");
-            return null;
+            throw new AuthenticationCredentialsNotFoundException("로그인 정보가 없습니다.");
         }
 
         return Arrays.stream(request.getCookies())
@@ -115,8 +114,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractRefreshTokenFromCookies(HttpServletRequest request) {
         if (request.getCookies() == null) {
-            System.out.println("[extractRefreshTokenFromCookies] No cookies found in request.");
-            return null;
+            throw new AuthenticationCredentialsNotFoundException("로그인 정보가 없습니다.");
         }
 
         return Arrays.stream(request.getCookies())

@@ -7,10 +7,15 @@ import com.clip.service.AuthService;
 import com.clip.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -37,11 +42,27 @@ public class AuthController {
     }
 
     @Operation(
+            summary = "소셜로그인",
+            description = "제공사를 요청받아 그 제공사의 로그인창을 띄웁니다"
+    )
+    @GetMapping("/social/login")
+    public void socialLoginRedirect(@RequestParam("provider") String provider,
+                                    HttpServletResponse response) throws IOException {
+        String redirectUrl = switch (provider.toLowerCase()) {
+            case "kakao" -> "/oauth2/authorization/kakao";
+            case "google" -> "/oauth2/authorization/google";
+            default -> throw new IllegalArgumentException("지원하지 않는 소셜 로그인입니다.");
+        };
+
+        response.sendRedirect(redirectUrl);
+    }
+
+    @Operation(
             summary = "회원가입",
             description = "아이디와 비밀번호, 닉네임을 입력하여 회원가입합니다"
     )
     @PostMapping("/signup")
-    public ResponseEntity<Response<SignUpResponseDTO>> signUp(@RequestBody SignUpRequestDTO request) {
+    public ResponseEntity<Response<SignUpResponseDTO>> signUp(@Valid @RequestBody SignUpRequestDTO request) {
         return ResponseEntity.ok(Response.success(userService.signUp(request)));
     }
 
@@ -62,17 +83,4 @@ public class AuthController {
     public ResponseEntity<Response<DuplicationResponseDTO>> nicknameDuplicationCheck(@PathVariable String nickname){
         return ResponseEntity.ok(Response.success(userService.checkNickName(nickname)));
     }
-
-    @Operation(
-            summary = "유저 정보 가져오기",
-            description = "유저 정보를 가져옵니다"
-    )
-    @GetMapping("/me")
-    public ResponseEntity<Response<CustomUserDetails>> checkLogin(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ){
-        return ResponseEntity.ok(Response.success(userDetails));
-    }
-
-
 }

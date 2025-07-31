@@ -8,3 +8,6 @@ springdoc:
     operationsSorter: method
     tagsSorter: alpha
     with-credentials: true
+  model-and-view-allowed: true
+  override-with-generic-response: false
+  show-actuator: true

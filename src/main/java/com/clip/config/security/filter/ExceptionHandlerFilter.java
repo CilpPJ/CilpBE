@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,7 +27,10 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response); // JwtFilter 실행 포함
         } catch (CustomException e) {
             setErrorResponse(response, HttpStatus.BAD_REQUEST, e.getErrorCode(), e.getMessage());
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
+            setErrorResponse(response, HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "로그인이 필요합니다.");
+
+        }catch (Exception e) {
             setErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "예상치 못한 오류 발생");
         }
     }

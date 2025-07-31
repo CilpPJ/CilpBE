@@ -34,7 +34,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         return user.getUserId();
     }
 
-    public String getnickname() {
+    public String getNickname() {
         return user.getNickname();
     }
 
@@ -48,7 +48,6 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     public String getName() {
         return user.getUserId(); // 유니크한 식별자 (id 또는 providerId)
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
