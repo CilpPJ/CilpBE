@@ -1,6 +1,7 @@
 package com.clip.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,10 +9,15 @@ import lombok.Setter;
 @Setter
 @Schema(description = "회원가입 요청 DTO")
 public class SignUpRequestDTO {
-    @Schema(description = "아이디", example = "testuser")
+    @Schema(description = "아이디", example = "testuser", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "아이디는 필수 입력 값입니다.")
     private String userId;
-    @Schema(description = "비밀번호", example = "testpass")
+
+    @Schema(description = "비밀번호", example = "testpass", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
     private String password;
-    @Schema(description = "닉네임", example = "tester")
+
+    @Schema(description = "닉네임", example = "tester", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "닉네임은 필수 입력 값입니다.")
     private String nickname;
 }

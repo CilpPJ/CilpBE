@@ -10,8 +10,11 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
@@ -36,7 +39,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
 
-        response.sendRedirect("https://localhost:5173");
+        response.sendRedirect("https://www.clipin.store");
     }
 
     private ResponseCookie createAccessTokenCookie(String accessToken, HttpServletRequest request) {
