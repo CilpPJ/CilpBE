@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 @Getter
 @Builder
@@ -15,39 +17,54 @@ public class OAuthAttributes {
     private String providerId;
     private String email;
     private String nickname;
-    private Map<String, Object> attributes; // 원본 응답 전체 저장
+    private Map<String, Object> attributes;
 
-    public static OAuthAttributes of(String provider, Map<String, Object> attributes){
-        if ("google".equals(provider)) {
-            return ofGoogle(provider, attributes);
-        } else if ("kakao".equals(provider)) {
-            return ofKakao(provider, attributes);
-        } else {
-            throw new CustomException("SOCIAL_LOGIN_NOT_FOUND", "해당 소셜 로그인은 지원하지 않습니다");
+    public static OAuthAttributes of(String provider, Map<String, Object> attributes) {
+        String id = Optional.ofNullable(provider).orElse("").trim().toLowerCase(Locale.ROOT);
+        return switch (id) {
+            case "google" -> ofGoogle(id, attributes);
+            case "kakao"  -> ofKakao(id, attributes);
+            default -> throw new CustomException("SOCIAL_LOGIN_NOT_FOUND", "해당 소셜 로그인은 지원하지 않습니다");
+        };
+    }
+
+    private static OAuthAttributes ofGoogle(String provider, Map<String, Object> attrs) {
+        String sub = (String) attrs.get("sub");
+        if (sub == null) {
+            throw new CustomException("OAUTH_ATTR_MISSING", "Google 응답에 sub가 없습니다");
         }
-    }
-
-    private static OAuthAttributes ofGoogle(String provider, Map<String, Object> attributes) {
+        String email = (String) attrs.get("email");
+        String name  = (String) attrs.get("name");
         return OAuthAttributes.builder()
                 .provider(provider)
-                .providerId((String) attributes.get("sub"))         // 구글 고유 ID
-                .email((String) attributes.get("email"))            // 이메일
-                .nickname((String) attributes.get("name"))          // 사용자 이름
-                .attributes(attributes)
+                .providerId(sub)
+                .email(email)            // 이메일 동의 안 주면 null일 수 있음
+                .nickname(name != null ? name : ("google_" + sub))
+                .attributes(attrs)
                 .build();
     }
 
-    private static OAuthAttributes ofKakao(String provider, Map<String, Object> attributes) {
-        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+    @SuppressWarnings("unchecked")
+    private static OAuthAttributes ofKakao(String provider, Map<String, Object> attrs) {
+        Object idObj = attrs.get("id");
+        if (idObj == null) {
+            throw new CustomException("OAUTH_ATTR_MISSING", "Kakao 응답에 id가 없습니다");
+        }
+        String providerId = String.valueOf(idObj);
+
+        Map<String, Object> account = (Map<String, Object>) attrs.getOrDefault("kakao_account", Map.of());
+        Map<String, Object> profile = (Map<String, Object>) account.getOrDefault("profile", Map.of());
+
+        String email = (String) account.get("email"); // 동의 안하면 null
+        String nickname = Optional.ofNullable((String) profile.get("nickname"))
+                .orElse("kakao_" + providerId);
 
         return OAuthAttributes.builder()
                 .provider(provider)
-                .providerId(attributes.get("id").toString())                    // 카카오 고유 ID
-                .email((String) kakaoAccount.get("email"))                     // 이메일
-                .nickname((String) profile.get("nickname"))                    // 닉네임
-                .attributes(attributes)
+                .providerId(providerId)
+                .email(email)
+                .nickname(nickname)
+                .attributes(attrs)
                 .build();
     }
-
 }

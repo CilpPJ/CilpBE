@@ -10,8 +10,6 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,4 +35,16 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tag> Tag = new ArrayList<>();
+
+    // 회원가입/소셜로그인 전용 생성자 빌더
+    @Builder
+    public User(String userId, String password, String nickname, String provider, String providerId) {
+        this.userId = userId;
+        this.password = password;
+        this.nickname = nickname;
+        this.provider = provider;
+        this.providerId = providerId;
+        this.clips = new ArrayList<>();
+        this.Tag = new ArrayList<>();
+    }
 }

@@ -102,6 +102,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractTokenFromCookies(HttpServletRequest request) {
         if (request.getCookies() == null) {
+            System.out.println("[JwtFilter] 쿠키 없음");
             throw new AuthenticationCredentialsNotFoundException("로그인 정보가 없습니다.");
         }
 
@@ -114,6 +115,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractRefreshTokenFromCookies(HttpServletRequest request) {
         if (request.getCookies() == null) {
+            System.out.println("[JwtFilter] 쿠키 없음");
             throw new AuthenticationCredentialsNotFoundException("로그인 정보가 없습니다.");
         }
 

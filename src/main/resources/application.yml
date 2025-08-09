@@ -1,4 +1,4 @@
 spring:
   config:
     import: optional:classpath:application-${spring.profiles.active}.yml
-spring.profiles.active: prod
+spring.profiles.active: dev

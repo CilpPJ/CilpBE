@@ -42,22 +42,6 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "소셜로그인",
-            description = "제공사를 요청받아 그 제공사의 로그인창을 띄웁니다"
-    )
-    @GetMapping("/social/login")
-    public void socialLoginRedirect(@RequestParam("provider") String provider,
-                                    HttpServletResponse response) throws IOException {
-        String redirectUrl = switch (provider.toLowerCase()) {
-            case "kakao" -> "/oauth2/authorization/kakao";
-            case "google" -> "/oauth2/authorization/google";
-            default -> throw new IllegalArgumentException("지원하지 않는 소셜 로그인입니다.");
-        };
-
-        response.sendRedirect(redirectUrl);
-    }
-
-    @Operation(
             summary = "회원가입",
             description = "아이디와 비밀번호, 닉네임을 입력하여 회원가입합니다"
     )
