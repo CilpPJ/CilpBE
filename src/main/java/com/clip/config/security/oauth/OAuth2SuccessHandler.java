@@ -5,7 +5,7 @@ import com.clip.config.security.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -21,6 +21,15 @@ import java.nio.charset.StandardCharsets;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtService jwtService;
+
+    @Value("${app.env}")               // dev/prod 분기용
+    private String appEnv;
+
+    @Value("${app.frontend.redirect.local}")
+    private String redirectLocal;
+
+    @Value("${app.frontend.redirect.prod}")
+    private String redirectProd;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -39,7 +48,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addHeader("Set-Cookie", accessCookie.toString());
         response.addHeader("Set-Cookie", refreshCookie.toString());
 
-        response.sendRedirect("https://www.clipin.store");
+        String target = "prod".equalsIgnoreCase(appEnv) ? redirectProd : redirectLocal;
+        response.sendRedirect(target);
     }
 
     private ResponseCookie createAccessTokenCookie(String accessToken, HttpServletRequest request) {

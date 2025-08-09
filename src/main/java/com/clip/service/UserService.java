@@ -9,9 +9,11 @@ import com.clip.dto.SignUpResponseDTO;
 import com.clip.entity.User;
 import com.clip.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -21,6 +23,10 @@ public class UserService {
 
     //회원가입
     public SignUpResponseDTO signUp(SignUpRequestDTO request) {
+
+        log.info("[SignUp] userId: {}, nickname: {}, password(raw): {}",
+                request.getUserId(), request.getNickname(), request.getPassword());
+
         if (userRepository.existsByUserId(request.getUserId())){
             throw new CustomException("DUPLICATION_ID", "아이디가 중복됩니다");
         }
@@ -32,6 +38,9 @@ public class UserService {
                 .provider("LOCAL")
                 .providerId(request.getUserId())
                 .build();
+
+        log.info("[SignUp] Built User: userId={}, provider={}, providerId={}",
+                user.getUserId(), user.getProvider(), user.getProviderId());
 
         userRepository.save(user);
 
